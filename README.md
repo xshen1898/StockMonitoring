@@ -1,11 +1,13 @@
 # Stock Monitoring
 实时监控个人自选的股票。当达到某个设定的条件后，使用语音和文字报警。
 
-### Requirements:
+## Requirements
 - python3
 - requests
 - prettytable
 - espeak
 
-### Running On Ubuntu:
+## Running on Ubuntu
 ![stock-monitoring](https://raw.githubusercontent.com/xshen1898/StockMonitoring/master/img/stock-monitoring.png "stock-monitoring")
+
+![stock-limit-up](https://raw.githubusercontent.com/xshen1898/StockMonitoring/master/img/stock-limit-up.png "stock-limit-up")
