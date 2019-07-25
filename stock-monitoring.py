@@ -3,14 +3,23 @@
 # Author shen.charles@hotmail.com
 
 import time
-import json
 import subprocess
 
 import requests
 import prettytable
 
 
+def add_market_code(x):
+    y = '0.' + x
+    if x.startswith('6'):
+        y = '1.' + x
+    return y
+
+
 def get_data(stock_codes):
+    stock_codes = list(map(add_market_code, stock_codes))
+    stock_codes = ','.join(stock_codes)
+
     endpoint = 'http://push2.eastmoney.com/api/qt/ulist.np/get'
     var1 = '?fields=f2,f3,f14,f12,f13,f19'
     var2 = '&invt=2&fltt=2&fid=f3'
@@ -31,15 +40,8 @@ def speak(text):
 def hyphen_to_zero(x):
     for k, v in x.items():
         if v == '-':
-            x[k] = 0
+            x[k] = 0.0
     return x
-
-
-def add_market_code(x):
-    y = '0.' + x
-    if x.startswith('6'):
-        y = '1.' + x
-    return y
 
 
 def main(stock_codes):
@@ -54,26 +56,26 @@ def main(stock_codes):
     for stock in stock_list:
         msg = ''
         # 针对所有自选股票的判断条件
-        if float(stock['f3']) > 9.8:
+        if stock['f3'] > 9.8:
             if stock['f12'] not in []:
                 msg = '{}涨停'.format(stock['f14'])
-        elif float(stock['f3']) > 5.0:
+        elif stock['f3'] > 5.0:
             # 屏蔽某些股票的报警，例如'002158'
             if stock['f12'] not in ['002158']:
                 msg = '{}涨幅{}'.format(stock['f14'], stock['f3'])
-        elif float(stock['f3']) < -5.0:
+        elif stock['f3'] < -5.0:
             if stock['f12'] not in []:
                 msg = '{}跌幅{}'.format(stock['f14'], stock['f3'])
-        elif float(stock['f3']) < -9.0:
+        elif stock['f3'] < -9.0:
             if stock['f12'] not in []:
                 msg = '{}跌停'.format(stock['f14'])
         # 针对某些自选股票的判断条件
         if stock['f12'] in ['002158']:
-            if float(stock['f3']) < 9.8:
+            if stock['f3'] < 9.8:
                 msg = '{}开板'.format(stock['f14'])
         # 针对某个自选股票的判断条件
         if stock['f12'] == '000063':
-            if float(stock['f2']) < 32.0:
+            if stock['f2'] < 32.0:
                 msg = '{}价格小于32'.format(stock['f14'])
         if msg:
             alarms.append(msg)
@@ -89,16 +91,15 @@ def main(stock_codes):
 if __name__ == '__main__':
     stock_codes = [
         '000063',
-        '601236',
-        '601698',
-        '000536',
-        '600078',
-        '002915',
+        '002902',
+        '600410',
         '000862',
-        '002158',
+        '603738',
+        '600604',
+        '000536',
+        '601330',
+        '603169',
     ]
-    stock_codes = list(map(add_market_code, stock_codes))
-    stock_codes = ','.join(stock_codes)
 
     while True:
         print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
