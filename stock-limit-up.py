@@ -9,12 +9,29 @@ import prettytable
 
 
 def get_data():
-    endpoint = 'http://nufm.dfcfw.com/EM_Finance2014NumericApplication/JS.aspx'
-    var1 = '?type=ct&st=(FFRank)&sr=1&p=1&ps=4000'
-    var2 = '&js={"data":[(x)]}&token=894050c76af8597a853f5b408b759f5d'
-    var3 = '&cmd=C._AB&sty=DCFFITAM'
-    url = '{0}{1}{2}{3}'.format(endpoint, var1, var2, var3)
-    response = requests.get(url)
+    url = 'http://nufm.dfcfw.com/EM_Finance2014NumericApplication/JS.aspx'
+    headers = {
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'max-age=0',
+        'Connection': 'keep-alive',
+        'Host': 'nufm.dfcfw.com',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
+    }
+    params = {
+        'type': 'ct',
+        'st': '(FFRank)',
+        'sr': 1,
+        'p': 1,
+        'ps': 4000,
+        'js': '{"data":[(x)]}',
+        'token': '894050c76af8597a853f5b408b759f5d',
+        'cmd': 'C._AB',
+        'sty': 'DCFFITAM'
+    }
+    response = requests.get(url, params=params, headers=headers, verify=False)
     data_byte = response.content
     data_str = data_byte.decode('utf-8')
     data_dict = json.loads(data_str)
@@ -36,7 +53,7 @@ if __name__ == '__main__':
             stock.append(values[9])
             stock.append(values[13])
             stock_list.append(stock)
-    stock_list = sorted(stock_list, key=lambda x: x[-1])
+    stock_list = sorted(stock_list, key=lambda x: float(x[-3]))
     stock_codes = []
     for row in stock_list:
         tb.add_row(row)
